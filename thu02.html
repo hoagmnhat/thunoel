@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Thư Giáng Sinh ❄️</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --env:#d65549;
+      --env-dark:#9d261b;
+      --flap:#0aa128;
+      --paper:#fffdf2;
+      --ink:#7a3a10;
+    }
+
+    *{box-sizing:border-box}
+    body{
+      margin:0; min-height:100vh; overflow:hidden;
+      background:radial-gradient(circle at top,#c6d3b8,#7f8b6f 80%);
+      display:flex; flex-direction:column; align-items:center; justify-content:center;
+      font-family:'Poppins',sans-serif;
+    }
+
+    .wrapper{height:380px; animation:float 3s ease-in-out infinite}
+    @keyframes float{50%{transform:translateY(-10px)}}
+
+    .envelope{
+      position:relative; width:360px; height:230px; cursor:pointer;
+      background:var(--flap);
+      border-radius:0 0 10px 10px;
+      box-shadow:0 6px 20px rgba(0,0,0,.3);
+      perspective:1200px;
+    }
+
+    .flap{
+      position:absolute; inset:0;
+      border-left:180px solid transparent;
+      border-right:180px solid transparent;
+      border-top:140px solid var(--flap);
+      transform-origin:top;
+      transition:.6s;
+      z-index:5;
+    }
+
+    .pocket{
+      position:absolute; bottom:0; width:0; height:0;
+      border-left:180px solid var(--env);
+      border-right:180px solid var(--env);
+      border-bottom:90px solid var(--env-dark);
+      border-top:140px solid transparent;
+      border-radius:0 0 10px 10px;
+      z-index:3;
+    }
+
+    .letter{
+      position:absolute; left:50%; top:8px;
+      transform:translateX(-50%);
+      width:94%; height:94%;
+      background:var(--paper);
+      border-radius:14px;
+      padding:16px;
+      box-shadow:0 4px 16px rgba(0,0,0,.2);
+      transition:.6s .3s;
+      z-index:2;
+      overflow:hidden;
+      border:6px solid;
+      border-image:repeating-linear-gradient(
+        45deg,#c0392b 0 10px,#fff 10px 20px
+      ) 1;
+    }
+
+    .content{
+      font-family:'Pacifico',cursive;
+      color:var(--ink);
+      text-align:center;
+      font-size:1.35em;
+      line-height:1.5;
+    }
+
+    .page{display:none; opacity:0; transition:.5s}
+    .page.active{display:block; opacity:1}
+
+    .open .flap{transform:rotateX(180deg); z-index:1}
+    .open .letter{transform:translate(-50%,-85px) rotate(-3deg)}
+
+    .controls{margin-top:50px}
+    button{
+      padding:14px 30px; margin:0 6px;
+      border-radius:25px; border:none;
+      background:linear-gradient(135deg,#c41e3a,#a01729,#2e7d32);
+      color:#fff; font-weight:600; cursor:pointer;
+      box-shadow:0 4px 15px rgba(0,0,0,.3);
+      transition:.3s;
+    }
+    button:hover{transform:translateY(-3px) scale(1.05)}
+
+    .snow{
+      position:fixed; top:-10px; color:#fff;
+      pointer-events:none;
+      animation:fall linear infinite;
+    }
+    @keyframes fall{
+      to{transform:translateY(110vh) rotate(360deg); opacity:.2}
+    }
+  </style>
+</head>
+<body>
+
+<div class="wrapper">
+  <div class="envelope" id="env">
+    <div class="flap"></div>
+    <div class="pocket"></div>
+
+    <div class="letter">
+      <div class="content">
+        <div class="page active">For you… 🎄</div>
+        <div class="page">Giáng Sinh lại về mang theo chút lạnh rất khẽ.</div>
+        <div class="page">Nhưng nghĩ đến em, lòng anh lại ấm.</div>
+        <div class="page">Mong mùa đông này sẽ dịu dàng với em ✨</div>
+        <div class="page">Merry Christmas ❤️</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="controls">
+  <button id="open">Mở</button>
+  <button id="next" style="display:none">Tiếp</button>
+  <button id="close" style="display:none">Đóng</button>
+</div>
+
+<!-- 🎵 NHẠC -->
+<audio id="bgMusic" preload="auto">
+  <source src="nhac.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+  const env = document.getElementById('env');
+  const pages = [...document.querySelectorAll('.page')];
+  const openBtn = document.getElementById('open');
+  const nextBtn = document.getElementById('next');
+  const closeBtn = document.getElementById('close');
+
+  /* ===== FIX NHẠC MOBILE ===== */
+  const music = document.getElementById('bgMusic');
+  music.volume = 0.4;
+  let started = false;
+  let i = 0;
+
+  openBtn.onclick = () => {
+    env.classList.add('open');
+    openBtn.style.display = 'none';
+    nextBtn.style.display = 'inline-block';
+    closeBtn.style.display = 'inline-block';
+
+    // CHỈ PLAY 1 LẦN DUY NHẤT (mobile yêu cầu)
+    if (!started) {
+      music.currentTime = 21; // tua đầu bài
+      music.play().then(()=>{
+        started = true;
+      }).catch(()=>{});
+    }
+
+    // mở lại tiếng
+    music.volume = 0.4;
+  };
+
+  nextBtn.onclick = () => {
+    pages[i].classList.remove('active');
+    i = (i + 1) % pages.length;
+    pages[i].classList.add('active');
+  };
+
+  closeBtn.onclick = () => {
+    env.classList.remove('open');
+    i = 0;
+    pages.forEach(p => p.classList.remove('active'));
+    pages[0].classList.add('active');
+    openBtn.style.display = 'inline-block';
+    nextBtn.style.display = 'none';
+    closeBtn.style.display = 'none';
+
+    // ❌ KHÔNG pause → chỉ tắt tiếng (chuẩn mobile)
+    music.volume = 10;
+  };
+
+  /* ❄️ TUYẾT */
+  setInterval(()=>{
+    const s=document.createElement('div');
+    s.className='snow';
+    s.textContent='❄';
+    s.style.left=Math.random()*100+'vw';
+    s.style.fontSize=10+Math.random()*14+'px';
+    s.style.animationDuration=6+Math.random()*6+'s';
+    document.body.appendChild(s);
+    setTimeout(()=>s.remove(),12000);
+  },180);
+</script>
+
+</body>
+</html>
